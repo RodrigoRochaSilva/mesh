@@ -19,18 +19,6 @@
   status = 200
   force = true
 
-[[redirects]]
-  from = "/api/auth/oauth/google/start"
-  to = "/.netlify/functions/auth-oauth-google-start"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/auth/oauth/google/complete"
-  to = "/.netlify/functions/auth-oauth-google-complete"
-  status = 200
-  force = true
-
 # Temporary compatibility with the legacy endpoint
 [[redirects]]
   from = "/api-proxy/auth_mexe"

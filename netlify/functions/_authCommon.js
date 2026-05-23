@@ -1,6 +1,6 @@
 'use strict';
 
-const ALLOWED_USER_TYPES = new Set(['team', 'guest']);
+const ALLOWED_USER_TYPES = new Set(['team', 'guest', 'full']);
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX_ATTEMPTS = 5;
 const rateLimitStore = new Map();
@@ -13,13 +13,12 @@ function getEnvConfig() {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
   const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  const oauthRedirectPath = process.env.OAUTH_GOOGLE_REDIRECT_PATH || '/oauth-callback.html';
   const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
     .split(',')
     .map((v) => v.trim())
     .filter(Boolean);
 
-  return { supabaseUrl, anonKey, serviceRoleKey, oauthRedirectPath, allowedOrigins };
+  return { supabaseUrl, anonKey, serviceRoleKey, allowedOrigins };
 }
 
 function getRequestIp(headers) {
@@ -258,53 +257,6 @@ async function getUserFromAccessToken({ supabaseUrl, anonKey, accessToken }) {
   return { error: false, status: resp.status, data: await resp.json() };
 }
 
-function buildGoogleAuthorizeUrl({ supabaseUrl, redirectTo, codeChallenge }) {
-  const qs = new URLSearchParams({
-    provider: 'google',
-    flow_type: 'pkce',
-    prompt: 'select_account',
-    redirect_to: redirectTo,
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
-  });
-  return `${supabaseUrl}/auth/v1/authorize?${qs.toString()}`;
-}
-
-function isValidPkceChallenge(value) {
-  return typeof value === 'string' && /^[A-Za-z0-9_-]{43,128}$/.test(value);
-}
-
-function isValidPkceVerifier(value) {
-  return typeof value === 'string' && /^[A-Za-z0-9_-]{43,128}$/.test(value);
-}
-
-function isValidAuthCode(value) {
-  return typeof value === 'string' && value.length > 0 && value.length <= 1024 && /^[A-Za-z0-9._~+/=-]+$/.test(value);
-}
-
-function isSafeRedirectPath(value) {
-  if (typeof value !== 'string') return false;
-  if (!value.startsWith('/')) return false;
-  if (value.startsWith('//') || value.startsWith('/\\')) return false;
-  if (/[\r\n\t\s]/.test(value)) return false;
-  return /^\/[A-Za-z0-9._~\-/?=&%]*$/.test(value);
-}
-
-async function exchangeCodeForSession({ supabaseUrl, anonKey, authCode, codeVerifier }) {
-  const resp = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=pkce`, {
-    method: 'POST',
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ auth_code: authCode, code_verifier: codeVerifier }),
-  });
-
-  if (!resp.ok) return { error: true, status: resp.status, data: null };
-  return { error: false, status: resp.status, data: await resp.json() };
-}
-
 module.exports = {
   getEnvConfig,
   getRequestIp,
@@ -323,10 +275,4 @@ module.exports = {
   refreshSession,
   getProfileByUserId,
   getUserFromAccessToken,
-  buildGoogleAuthorizeUrl,
-  isValidPkceChallenge,
-  isValidPkceVerifier,
-  isValidAuthCode,
-  isSafeRedirectPath,
-  exchangeCodeForSession,
 };

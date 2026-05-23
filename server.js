@@ -18,13 +18,7 @@ const {
     isEligibleProfile,
     signInWithPassword,
     refreshSession,
-    getProfileByUserId,
-    buildGoogleAuthorizeUrl,
-    isValidPkceChallenge,
-    isValidPkceVerifier,
-    isValidAuthCode,
-    isSafeRedirectPath,
-    exchangeCodeForSession
+    getProfileByUserId
 } = require('./netlify/functions/_authCommon');
 
 const PORT = 8080;
@@ -217,137 +211,6 @@ async function handleAuthValidate(req, res, corsHeaders) {
     }
 }
 
-async function handleOAuthGoogleStart(req, res, corsHeaders, origin) {
-    const { supabaseUrl, anonKey, oauthRedirectPath } = getEnvConfig();
-    if (!supabaseUrl || !anonKey) {
-        sendJson(res, 500, { error: 'server_misconfigured' }, corsHeaders);
-        return;
-    }
-
-    const rawBody = await readBody(req);
-    let body = {};
-    try {
-        body = JSON.parse(rawBody || '{}');
-    } catch (_) {
-        sendJson(res, 400, { error: 'invalid_json' }, corsHeaders);
-        return;
-    }
-
-    const codeChallenge = String((body && body.code_challenge) || '');
-    if (!isValidPkceChallenge(codeChallenge)) {
-        sendJson(res, 400, { error: 'invalid_code_challenge' }, corsHeaders);
-        return;
-    }
-
-    const requestedRedirect = (body && body.redirect_path) ? String(body.redirect_path) : '';
-    const defaultRedirect = oauthRedirectPath || '/oauth-callback.html';
-    const redirectPath = requestedRedirect && isSafeRedirectPath(requestedRedirect)
-        ? requestedRedirect
-        : defaultRedirect;
-
-    const requestHost = String(req.headers.host || 'localhost:8080');
-    const inferredOrigin = `http://${requestHost}`;
-    const requestOrigin = origin || inferredOrigin;
-    const redirectTo = `${requestOrigin}${redirectPath}`;
-
-    const authorizeUrl = buildGoogleAuthorizeUrl({
-        supabaseUrl,
-        redirectTo,
-        codeChallenge
-    });
-
-    sendJson(res, 200, {
-        provider: 'google',
-        authorize_url: authorizeUrl,
-        redirect_to: redirectTo
-    }, corsHeaders);
-}
-
-async function handleOAuthGoogleComplete(req, res, corsHeaders) {
-    const { supabaseUrl, anonKey, serviceRoleKey } = getEnvConfig();
-    if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-        sendJson(res, 500, { error: 'server_misconfigured' }, corsHeaders);
-        return;
-    }
-
-    const rawBody = await readBody(req);
-    let body = null;
-    try {
-        body = JSON.parse(rawBody || '{}');
-    } catch (_) {
-        sendJson(res, 400, { error: 'invalid_json' }, corsHeaders);
-        return;
-    }
-
-    const authCode = String(body.code || '');
-    const codeVerifier = String(body.code_verifier || '');
-
-    if (!isValidAuthCode(authCode) || !isValidPkceVerifier(codeVerifier)) {
-        sendJson(res, 400, { error: 'invalid_pkce_payload' }, corsHeaders);
-        return;
-    }
-
-    const ip = getRequestIp(req.headers);
-    const rate = checkRateLimit(ip, 'oauth-google');
-    if (!rate.allowed) {
-        sendJson(res, 429, { error: 'too_many_attempts' }, {
-            ...corsHeaders,
-            'Retry-After': String(rate.retryAfterSeconds || 60)
-        });
-        return;
-    }
-
-    try {
-        const tokenResp = await exchangeCodeForSession({
-            supabaseUrl,
-            anonKey,
-            authCode,
-            codeVerifier
-        });
-        if (tokenResp.error || !tokenResp.data || !tokenResp.data.access_token || !tokenResp.data.user) {
-            sendJson(res, 401, { error: 'invalid_session' }, corsHeaders);
-            return;
-        }
-
-        const tokenData = tokenResp.data;
-
-        const profileResp = await getProfileByUserId({
-            supabaseUrl,
-            serviceRoleKey,
-            userId: tokenData.user.id
-        });
-        if (profileResp.error || !profileResp.data) {
-            sendJson(res, 403, { error: 'access_denied' }, corsHeaders);
-            return;
-        }
-
-        if (!isEligibleProfile(profileResp.data)) {
-            sendJson(res, 403, { error: 'user_type_not_allowed' }, corsHeaders);
-            return;
-        }
-
-        const expiresIn = Number(tokenData.expires_in || 3600);
-        const expiresAt = Number(tokenData.expires_at || (Math.floor(Date.now() / 1000) + expiresIn));
-
-        sendJson(res, 200, {
-            session: {
-                access_token: tokenData.access_token,
-                refresh_token: tokenData.refresh_token,
-                expires_in: expiresIn,
-                expires_at: expiresAt,
-                token_type: tokenData.token_type || 'bearer'
-            },
-            user: {
-                id: tokenData.user.id,
-                email: tokenData.user.email || ''
-            },
-            profile: profileResp.data
-        }, corsHeaders);
-    } catch (_) {
-        sendJson(res, 500, { error: 'internal_error' }, corsHeaders);
-    }
-}
-
 function serveStatic(req, res) {
     let filePath = '.' + req.url.split('?')[0];
 
@@ -413,24 +276,6 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         sendJson(res, 200, { ok: true }, corsHeaders);
-        return;
-    }
-
-    if (req.url === '/api/auth/oauth/google/start') {
-        if (req.method !== 'POST') {
-            sendJson(res, 405, { error: 'method_not_allowed' }, corsHeaders);
-            return;
-        }
-        await handleOAuthGoogleStart(req, res, corsHeaders, origin);
-        return;
-    }
-
-    if (req.url === '/api/auth/oauth/google/complete') {
-        if (req.method !== 'POST') {
-            sendJson(res, 405, { error: 'method_not_allowed' }, corsHeaders);
-            return;
-        }
-        await handleOAuthGoogleComplete(req, res, corsHeaders);
         return;
     }
 

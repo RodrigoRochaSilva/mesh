@@ -24,9 +24,8 @@ const CRITICAL_ASSETS = [
     './auth.js',
     './env.js',
     './sw-register.js',
-    './oauth-callback.html',
     './manifest.json',
-    './imagens/logo.png',
+    './imagens/logo_principal.png',
     './libs/leaflet-1.7.1/leaflet.css',
     './libs/leaflet-1.7.1/leaflet.js',
     './libs/d3-7.8.5/d3.min.js',
@@ -165,10 +164,9 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Always prefer fresh auth/client bootstrap files to avoid stale OAuth/login logic.
+    // Always prefer fresh auth/client bootstrap files to avoid stale login logic.
     if (
         url.pathname === '/auth.js' ||
-        url.pathname === '/oauth-callback.html' ||
         url.pathname === '/index.html' ||
         url.pathname === '/scripts.js' ||
         url.pathname === '/version.js' ||

@@ -4,7 +4,6 @@ const env = window['MexeEnv'] || {};
 const AUTH_BASE_URL = env['authBaseUrl'] || '/api/auth';
 
 const SESSION_KEY = 'mexe_session';
-const PKCE_VERIFIER_KEY = 'mexe_pkce_verifier';
 const EXPIRATION_CHECK_INTERVAL = 300000; // 5 min
 const REFRESH_SKEW_MS = 60000;
 const ONLINE_VALIDATION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -161,115 +160,6 @@ async function authenticate(email, password) {
     return sessionData;
 }
 
-function base64UrlEncode(bytes) {
-    let str = '';
-    for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
-    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function generatePkceVerifier() {
-    const bytes = new Uint8Array(48);
-    window.crypto.getRandomValues(bytes);
-    return base64UrlEncode(bytes);
-}
-
-async function computePkceChallenge(verifier) {
-    const data = new TextEncoder().encode(verifier);
-    const digest = await window.crypto.subtle.digest('SHA-256', data);
-    return base64UrlEncode(new Uint8Array(digest));
-}
-
-function storePkceVerifier(verifier) {
-    try {
-        window.sessionStorage.setItem(PKCE_VERIFIER_KEY, verifier);
-    } catch (_) {
-        throw createAuthError(
-            'Session storage is unavailable. Enable site data to sign in with Google.',
-            500,
-            'pkce_storage_unavailable'
-        );
-    }
-}
-
-function consumePkceVerifier() {
-    try {
-        const verifier = window.sessionStorage.getItem(PKCE_VERIFIER_KEY);
-        window.sessionStorage.removeItem(PKCE_VERIFIER_KEY);
-        return verifier || '';
-    } catch (_) {
-        return '';
-    }
-}
-
-async function startGoogleOAuth() {
-    if (!window.crypto || !window.crypto.subtle) {
-        throw createAuthError('Secure cryptography is not available in this browser.', 500, 'crypto_unavailable');
-    }
-    const verifier = generatePkceVerifier();
-    const challenge = await computePkceChallenge(verifier);
-    storePkceVerifier(verifier);
-
-    const data = await requestAuth('/oauth/google/start', {
-        redirect_path: '/oauth-callback.html',
-        code_challenge: challenge
-    });
-    if (!data || !data.authorize_url) {
-        throw createAuthError('Could not start Google sign-in.', 500, 'oauth_start_failed');
-    }
-    window.location.assign(data.authorize_url);
-}
-
-async function completeGoogleOAuth(payload) {
-    const data = await requestAuth('/oauth/google/complete', payload);
-    if (!data || !data.session || !data.user || !data.profile) {
-        throw createAuthError('Invalid OAuth response.', 500, 'invalid_auth_response');
-    }
-    const previous = await getSession();
-    const sessionData = normalizeSession(data, data.user.email || '', previous);
-    await saveSession(sessionData);
-    startExpirationCheck();
-    return sessionData;
-}
-
-function parseOAuthCodeFromLocation() {
-    const hashStr = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
-    const queryStr = window.location.search.startsWith('?') ? window.location.search.slice(1) : window.location.search;
-    const hash = new URLSearchParams(hashStr || '');
-    const query = new URLSearchParams(queryStr || '');
-
-    return {
-        code: query.get('code') || hash.get('code') || '',
-        oauth_error: query.get('error') || hash.get('error') || '',
-        oauth_error_description: query.get('error_description') || hash.get('error_description') || ''
-    };
-}
-
-async function completeGoogleOAuthFromCurrentUrl() {
-    const parsed = parseOAuthCodeFromLocation();
-    if (parsed.oauth_error) {
-        consumePkceVerifier();
-        const msg = parsed.oauth_error_description
-            ? decodeURIComponent(String(parsed.oauth_error_description).replace(/\+/g, '%20'))
-            : parsed.oauth_error;
-        throw createAuthError(`Google OAuth error: ${msg}`, 401, 'oauth_error');
-    }
-    if (!parsed.code) {
-        consumePkceVerifier();
-        throw createAuthError('OAuth callback did not include an authorization code.', 401, 'oauth_missing_code');
-    }
-
-    const verifier = consumePkceVerifier();
-    if (!verifier) {
-        throw createAuthError(
-            'Could not complete Google sign-in: PKCE verifier missing. Please try again from the sign-in screen.',
-            401,
-            'oauth_verifier_missing'
-        );
-    }
-
-    return await completeGoogleOAuth({ code: parsed.code, code_verifier: verifier });
-}
-
 async function validateSessionOnServer() {
     const existing = await getSession();
     if (!existing || !existing.session || !existing.session.refresh_token) return false;
@@ -371,9 +261,6 @@ function stopExpirationCheck() {
 
 window.Auth = {
     authenticate,
-    startGoogleOAuth,
-    completeGoogleOAuthFromCurrentUrl,
-    completeGoogleOAuth,
     getSession,
     getSessionAccessState,
     isSessionValid,

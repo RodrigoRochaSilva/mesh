@@ -11,7 +11,7 @@ mexe is a PWA (Progressive Web App) for field task navigation integrated with Ag
 - Task loading from GeoJSON (`.frs`, `.agxq`, `.geojson`, `.json`)
 - GPS positioning and navigation path recording
 - Offline-first behavior using Service Worker
-- Authentication with email/password and Google OAuth
+- Authentication with email/password
 - User type validation on the server side
 
 ## Authentication Flow
@@ -33,7 +33,6 @@ xeque-map-sem-ofusc_backup-main/
 +-- scripts.js
 +-- auth.js
 +-- sw.js
-+-- oauth-callback.html
 +-- manifest.json
 +-- server.js
 +-- start-server.bat

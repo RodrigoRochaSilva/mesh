@@ -1,1 +1,1 @@
-const APP_VERSION = 'v3.0';
+const APP_VERSION = 'v3.0-mexe.1';

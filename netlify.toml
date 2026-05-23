@@ -1,0 +1,61 @@
+[build]
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/auth/login"
+  to = "/.netlify/functions/auth-login"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/auth/validate"
+  to = "/.netlify/functions/auth-validate"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/auth/logout"
+  to = "/.netlify/functions/auth-logout"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/auth/oauth/google/start"
+  to = "/.netlify/functions/auth-oauth-google-start"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/auth/oauth/google/complete"
+  to = "/.netlify/functions/auth-oauth-google-complete"
+  status = 200
+  force = true
+
+# Temporary compatibility with the legacy endpoint
+[[redirects]]
+  from = "/api-proxy/auth_mexe"
+  to = "/.netlify/functions/auth-login"
+  status = 200
+  force = true
+
+# Security headers applied to every response.
+# NOTE: Content-Security-Policy is deployed in Report-Only first because
+# scripts.js is obfuscated and may use eval/Function. After 48h of clean
+# reports in production, rename the header to "Content-Security-Policy"
+# to enforce. The connect-src host must match the production Supabase URL.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com; connect-src 'self' https://*.supabase.co; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=(), usb=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+
+# Auth responses must never be cached anywhere along the path.
+[[headers]]
+  for = "/api/auth/*"
+  [headers.values]
+    Cache-Control = "no-store"

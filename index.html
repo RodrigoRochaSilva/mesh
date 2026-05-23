@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mexe</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#39693C">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Scouting task navigation for the AgroXeque platform">
+    <meta name="application-name" content="mexe">
+    <meta name="apple-mobile-web-app-title" content="mexe">
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
+    
+    <link rel="stylesheet" href="libs/leaflet-1.7.1/leaflet.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="libs/leaflet-1.7.1/leaflet.js"></script>
+    <script src="libs/d3-7.8.5/d3.min.js"></script>
+    <script src="libs/localforage-1.10.0/localforage.min.js"></script>
+</head>
+<body>
+    <div id="install-instructions-modal" class="install-modal hidden">
+        <div class="install-modal-content">
+            <h3>Install mexe</h3>
+            <div id="install-instructions-text"></div>
+            <button id="close-install-modal" class="custom-button close-modal-btn">Continue in Browser</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="imagens/logo_principal.png" alt="mexe Logo" class="logo">
+            </div>
+            <button id="install-help-button" class="install-help-button" type="button" aria-label="Installation help" title="Installation help">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-2.9 2.2-2.9 4"></path>
+                    <circle cx="12" cy="17.1" r="1"></circle>
+                </svg>
+            </button>
+            <div class="line2">
+                AgroXeque&copy;
+                <br>
+                <span id="app-version-display" style="font-weight: normal; font-size: 12px;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+        <div id="install-button-container"></div>
+        <div class="button-container">
+            <button id="loadGeojson" class="custom-button">Load Task</button>
+        </div>
+        <div id="legend"></div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-modal-content">
+            <div class="login-header">
+                <img src="imagens/logo_principal.png" alt="mexe Logo" class="login-logo">
+                <h2>Login</h2>
+                <p class="login-info">Use the same credentials you use on the AgroXeque platform</p>
+            </div>
+            <form id="login-form" method="post" action="#">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="you@email.com">
+                </div>
+                <div class="form-group form-group-spaced">
+                    <label for="login-password">Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="login-password" name="password" required autocomplete="current-password" placeholder="Your password">
+                        <button type="button" class="toggle-password" id="toggle-password" aria-label="Show password">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="login-error" class="error-message hidden"></div>
+                <button type="submit" id="login-submit" class="custom-button login-button">
+                    <span class="button-text">Sign In</span>
+                    <span class="button-loader hidden">&#x23F3;</span>
+                </button>
+            </form>
+            <div class="login-divider">
+                <span>Or</span>
+            </div>
+                        <button type="button" id="login-social-btn" class="custom-button social-login-button">
+                <span class="social-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" focusable="false">
+                        <path fill="#EA4335" d="M12 10.2v3.95h5.5c-.24 1.27-.96 2.35-2.04 3.08l3.3 2.56c1.92-1.77 3.02-4.38 3.02-7.49 0-.73-.06-1.43-.19-2.1H12z"></path>
+                        <path fill="#34A853" d="M12 22c2.73 0 5.03-.9 6.7-2.44l-3.3-2.56c-.91.61-2.08.97-3.4.97-2.62 0-4.84-1.77-5.63-4.15H2.95v2.64A10 10 0 0 0 12 22z"></path>
+                        <path fill="#FBBC05" d="M6.37 13.82A5.97 5.97 0 0 1 6.05 12c0-.63.11-1.23.32-1.82V7.54H2.95A10 10 0 0 0 2 12c0 1.61.39 3.13 1.08 4.46l3.29-2.64z"></path>
+                        <path fill="#4285F4" d="M12 6.04c1.48 0 2.8.51 3.84 1.5l2.88-2.88A9.98 9.98 0 0 0 12 2 10 10 0 0 0 2.95 7.54l3.42 2.64c.79-2.38 3.01-4.14 5.63-4.14z"></path>
+                    </svg>
+                </span>
+                <span>Continue with Google</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Social Login Instructions Modal -->
+    <div id="social-login-instructions-modal" class="login-modal hidden">
+        <div class="login-modal-content instructions-content">
+            <button class="close-instructions" id="close-instructions" aria-label="Close">&times;</button>
+            <div class="instructions-header">
+                <h2>How to set a password for a Google account</h2>
+                <p class="instructions-subtitle">If you originally signed up to AgroXeque with Google (without creating a password), set a password from your AgroXeque account to access mexe.</p>
+            </div>
+            <div class="instructions-steps">
+                <div class="instruction-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <p><strong>Sign in to AgroXeque</strong></p>
+                        <p class="step-detail">Use your Google account to sign in</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <p><strong>Open "My Account"</strong></p>
+                        <p class="step-detail">From the AgroXeque platform menu</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <p><strong>Click "Change my password"</strong></p>
+                        <p class="step-detail">An email will be sent to you</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <p><strong>Check your email and click the reset link</strong></p>
+                        <p class="step-detail">Check both your inbox and spam folder</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <p><strong>Set your new password</strong></p>
+                        <p class="step-detail">On the reset page, enter and confirm your new password</p>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="understood-btn" class="custom-button understood-button">Understood</button>
+        </div>
+    </div>
+
+    <!-- SAFE ZONE: API configuration protected from obfuscation -->
+    <script src="env.js"></script>
+
+    <script src="version.js"></script>
+    <script src="auth.js"></script>
+    <script src="scripts.js" defer></script>
+
+    <script src="sw-register.js"></script>
+
+</body>
+</html>
+
+
+

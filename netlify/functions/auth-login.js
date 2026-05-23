@@ -29,6 +29,12 @@ exports.handler = async (event) => {
     return jsonResponse(405, { error: 'method_not_allowed' }, corsHeaders);
   }
 
+  // TEMP DIAGNOSTIC — remove after CORS issue is resolved.
+  console.log('[auth-login] origin header =', JSON.stringify(origin));
+  console.log('[auth-login] CORS_ALLOWED_ORIGINS raw =', JSON.stringify(process.env.CORS_ALLOWED_ORIGINS || ''));
+  console.log('[auth-login] allowedOrigins parsed =', JSON.stringify(allowedOrigins));
+  console.log('[auth-login] isOriginAllowed =', isOriginAllowed(origin, allowedOrigins));
+
   if (!isOriginAllowed(origin, allowedOrigins)) {
     return jsonResponse(403, { error: 'origin_not_allowed' }, corsHeaders);
   }

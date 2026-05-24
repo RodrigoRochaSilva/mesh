@@ -1,24 +1,24 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mexe</title>
+    <title>mesh</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#39693C">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Scouting task navigation for the AgroXeque platform">
-    <meta name="application-name" content="mexe">
-    <meta name="apple-mobile-web-app-title" content="mexe">
+    <meta name="description" content="Navegação de tarefas de scouting para a plataforma AgroXeque">
+    <meta name="application-name" content="mesh">
+    <meta name="apple-mobile-web-app-title" content="mesh">
 
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
-    
+
     <link rel="stylesheet" href="libs/leaflet-1.7.1/leaflet.css">
     <link rel="stylesheet" href="styles.css">
 
@@ -29,18 +29,18 @@
 <body>
     <div id="install-instructions-modal" class="install-modal hidden">
         <div class="install-modal-content">
-            <h3>Install mexe</h3>
+            <h3>Instalar mesh</h3>
             <div id="install-instructions-text"></div>
-            <button id="close-install-modal" class="custom-button close-modal-btn">Continue in Browser</button>
+            <button id="close-install-modal" class="custom-button close-modal-btn">Continuar no navegador</button>
         </div>
     </div>
 
     <div class="header">
         <div class="header-content">
             <div class="logo-container">
-                <img src="imagens/logo_principal.png" alt="mexe Logo" class="logo">
+                <img src="imagens/logo_principal.png" alt="Logotipo do mesh" class="logo">
             </div>
-            <button id="install-help-button" class="install-help-button" type="button" aria-label="Installation help" title="Installation help">
+            <button id="install-help-button" class="install-help-button" type="button" aria-label="Ajuda para instalação" title="Ajuda para instalação">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-2.9 2.2-2.9 4"></path>
@@ -59,7 +59,7 @@
         <div id="map"></div>
         <div id="install-button-container"></div>
         <div class="button-container">
-            <button id="loadGeojson" class="custom-button">Load Task</button>
+            <button id="loadGeojson" class="custom-button">Carregar Tarefa</button>
         </div>
         <div id="legend"></div>
     </div>
@@ -68,20 +68,20 @@
     <div id="login-modal" class="login-modal">
         <div class="login-modal-content">
             <div class="login-header">
-                <img src="imagens/logo_principal.png" alt="mexe Logo" class="login-logo">
-                <h2>Login</h2>
-                <p class="login-info">Use the same credentials you use on the AgroXeque platform</p>
+                <img src="imagens/logo_principal.png" alt="Logotipo do mesh" class="login-logo">
+                <h2>Entrar</h2>
+                <p class="login-info">Use as mesmas credenciais que você usa na plataforma AgroXeque</p>
             </div>
             <form id="login-form" method="post" action="#">
                 <div class="form-group">
                     <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="you@email.com">
+                    <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="voce@email.com">
                 </div>
                 <div class="form-group form-group-spaced">
-                    <label for="login-password">Password</label>
+                    <label for="login-password">Senha</label>
                     <div class="password-input-wrapper">
-                        <input type="password" id="login-password" name="password" required autocomplete="current-password" placeholder="Your password">
-                        <button type="button" class="toggle-password" id="toggle-password" aria-label="Show password">
+                        <input type="password" id="login-password" name="password" required autocomplete="current-password" placeholder="Sua senha">
+                        <button type="button" class="toggle-password" id="toggle-password" aria-label="Mostrar senha">
                             <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -91,7 +91,7 @@
                 </div>
                 <div id="login-error" class="error-message hidden"></div>
                 <button type="submit" id="login-submit" class="custom-button login-button">
-                    <span class="button-text">Sign In</span>
+                    <span class="button-text">Entrar</span>
                     <span class="button-loader hidden">&#x23F3;</span>
                 </button>
             </form>
@@ -109,6 +109,3 @@
 
 </body>
 </html>
-
-
-

@@ -1,6 +1,6 @@
-# mexe
+# mesh
 
-mexe is a PWA (Progressive Web App) for field task navigation integrated with AgroXeque authentication.
+mesh is a PWA (Progressive Web App) for field task navigation integrated with AgroXeque authentication.
 
 > Note: The active authentication flow uses Supabase via `/api/auth/*`.
 

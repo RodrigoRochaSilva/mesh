@@ -3,7 +3,7 @@ importScripts('./version.js');
 
 const CONFIG = {
     version: APP_VERSION, 
-    cachePrefix: 'mexe-',
+    cachePrefix: 'mesh-',
     tileCacheLimit: 2000,
     tileCachePrefix: 'tiles-',
     maxRetries: 3,

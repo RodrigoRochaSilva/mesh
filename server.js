@@ -252,7 +252,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.url === '/api/auth/login' || req.url === '/api-proxy/auth_mexe') {
+    if (req.url === '/api/auth/login' || req.url === '/api-proxy/auth_mesh') {
         if (req.method !== 'POST') {
             sendJson(res, 405, { error: 'method_not_allowed' }, corsHeaders);
             return;

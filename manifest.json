@@ -1,6 +1,6 @@
 {
-  "name": "mexe",
-  "short_name": "mexe",
+  "name": "mesh",
+  "short_name": "mesh",
   "description": "Scouting task navigation for the AgroXeque platform",
   "start_url": "./",
   "display": "standalone",

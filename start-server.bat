@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   Local HTTP Server - mexe
+echo   Local HTTP Server - mesh
 echo ========================================
 echo.
 echo Starting server on port 8080...

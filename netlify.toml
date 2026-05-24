@@ -21,7 +21,7 @@
 
 # Temporary compatibility with the legacy endpoint
 [[redirects]]
-  from = "/api-proxy/auth_mexe"
+  from = "/api-proxy/auth_mesh"
   to = "/.netlify/functions/auth-login"
   status = 200
   force = true

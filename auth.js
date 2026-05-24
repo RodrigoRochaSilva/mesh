@@ -1,9 +1,9 @@
-// mexe authentication module (Supabase)
+// mesh authentication module (Supabase)
 
-const env = window['MexeEnv'] || {};
+const env = window['MeshEnv'] || {};
 const AUTH_BASE_URL = env['authBaseUrl'] || '/api/auth';
 
-const SESSION_KEY = 'mexe_session';
+const SESSION_KEY = 'mesh_session';
 const EXPIRATION_CHECK_INTERVAL = 300000; // 5 min
 const REFRESH_SKEW_MS = 60000;
 const ONLINE_VALIDATION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -12,7 +12,7 @@ const PLAN_GRACE_MS = 24 * 60 * 60 * 1000; // 24h
 let expirationCheckInterval = null;
 
 const storage = localforage.createInstance({
-    name: 'mexe',
+    name: 'mesh',
     storeName: 'auth'
 });
 
@@ -24,19 +24,19 @@ function createAuthError(message, status, code) {
 }
 
 function mapAuthErrorMessage(status, code) {
-    if (status === 401) return 'Incorrect email or password.';
+    if (status === 401) return 'Email ou senha incorretos.';
     if (status === 403) {
         if (code === 'plan_not_allowed' || code === 'user_type_not_allowed') {
-            return 'Your account type is not allowed to access this app. Please contact your administrator.';
+            return 'Seu tipo de conta não tem permissão para acessar este app. Fale com o administrador.';
         }
         if (code === 'origin_not_allowed') {
-            return 'This app origin is not allowed by the authentication server configuration.';
+            return 'A origem deste app não é permitida pela configuração do servidor de autenticação.';
         }
-        return 'Access denied. Please contact support if you believe this is a mistake.';
+        return 'Acesso negado. Entre em contato com o suporte se acreditar que isso é um engano.';
     }
     if (status === 429) return null;
-    if (status >= 500) return 'Authentication service is unavailable right now. Please try again in a moment.';
-    return 'Could not complete authentication. Please try again.';
+    if (status >= 500) return 'O serviço de autenticação está indisponível no momento. Tente novamente em instantes.';
+    return 'Não foi possível concluir a autenticação. Tente novamente.';
 }
 
 function getRetryAfterSeconds(response, data) {
@@ -99,9 +99,9 @@ async function requestAuth(path, payload) {
         if (response.status === 429) {
             const retryAfterSeconds = getRetryAfterSeconds(response, data);
             const retryLabel = retryAfterSeconds === 120
-                ? '2 minutes'
-                : `${retryAfterSeconds} seconds`;
-            const error = createAuthError(`Too many attempts. Please wait ${retryLabel}.`, 429, code);
+                ? '2 minutos'
+                : `${retryAfterSeconds} segundos`;
+            const error = createAuthError(`Muitas tentativas. Aguarde ${retryLabel}.`, 429, code);
             error.retryAfterSeconds = retryAfterSeconds;
             throw error;
         }
@@ -146,13 +146,13 @@ async function saveSession(data) { await storage.setItem(SESSION_KEY, data); }
 async function getSession() { return await storage.getItem(SESSION_KEY); }
 
 async function authenticate(email, password) {
-    if (!email || !password) throw createAuthError('Please enter your email and password.', 400, 'missing_credentials');
+    if (!email || !password) throw createAuthError('Digite seu email e sua senha.', 400, 'missing_credentials');
     const data = await requestAuth('/login', {
         email: email.trim().toLowerCase(),
         password
     });
     if (!data || !data.session || !data.user || !data.profile) {
-        throw createAuthError('Invalid authentication response.', 500, 'invalid_auth_response');
+        throw createAuthError('Resposta de autenticação inválida.', 500, 'invalid_auth_response');
     }
     const sessionData = normalizeSession(data, email.trim().toLowerCase(), null);
     await saveSession(sessionData);

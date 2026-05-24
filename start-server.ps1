@@ -6,7 +6,7 @@ $url = "http://localhost:$port/"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "  Local HTTP Server - mexe" -ForegroundColor Green
+Write-Host "  Local HTTP Server - mesh" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Starting server on port $port..." -ForegroundColor Yellow

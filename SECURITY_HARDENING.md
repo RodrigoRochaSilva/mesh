@@ -1,4 +1,4 @@
-﻿# Security Hardening Roadmap (mexe)
+﻿# Security Hardening Roadmap (mesh)
 
 This document consolidates security hardening recommendations before production rollout.
 

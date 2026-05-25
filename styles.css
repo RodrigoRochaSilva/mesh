@@ -1,4 +1,4 @@
-﻿body, html {
+body, html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -86,7 +86,9 @@
 }
 
 .logo {
-    width: 150px;
+    max-height: 60px;
+    max-width: 150px;
+    width: auto;
     height: auto;
     object-fit: contain;
 }
@@ -351,7 +353,10 @@
     }
 
     .logo {
-        width: 120px;
+        max-height: 50px;
+        max-width: 120px;
+        width: auto;
+        height: auto;
     }
 
     .line2 {
@@ -999,7 +1004,3 @@
         font-size: 14px;
     }
 }
-
-
-
-

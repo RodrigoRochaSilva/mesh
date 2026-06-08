@@ -19,3 +19,6 @@ pnpm-debug.log*
 # Runtime/cache artifacts
 .DS_Store
 Thumbs.db
+
+# Development/source files — not part of the deployed app
+deletar/

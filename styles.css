@@ -1004,3 +1004,20 @@ body, html {
         font-size: 14px;
     }
 }
+
+/* Labels rendered inside GeoJSON features when 'color' property is present */
+.feature-label {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    font-size: 11px;
+    font-weight: bold;
+    color: #222;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.feature-label::before {
+    display: none !important;
+}

@@ -1011,6 +1011,7 @@ body, html {
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
+    font-size: 11px; /* baseline; overridden per-zoom by JS so labels are never invisible */
     font-weight: bold;
     color: #000;
     white-space: nowrap;

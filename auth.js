@@ -6,7 +6,7 @@ const AUTH_BASE_URL = env['authBaseUrl'] || '/api/auth';
 const SESSION_KEY = 'mesh_session';
 const EXPIRATION_CHECK_INTERVAL = 300000; // 5 min
 const REFRESH_SKEW_MS = 60000;
-const ONLINE_VALIDATION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const ONLINE_VALIDATION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days — offline grace for field use (plan validity still gates access)
 const PLAN_GRACE_MS = 24 * 60 * 60 * 1000; // 24h
 
 let expirationCheckInterval = null;

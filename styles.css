@@ -36,19 +36,36 @@ body, html {
     height: 100%;
 }
 
-/* O cabecalho e uma unica linha flexivel: logo a esquerda, nota ao centro,
-   ajuda e versao a direita. Antes o botao de ajuda ficava em right:140px --
-   medida calculada para um texto curto -- e qualquer rotulo mais largo
-   passava por cima dele. */
-.header-note {
-    flex: 1;
-    margin: 0;
-    padding: 0 16px;
-    text-align: center;
-    color: #7d8b7e;
-    font-size: 12px;
+/* Canto direito do cabecalho: botao de ajuda ao lado de um bloco empilhado
+   com a versao e, abaixo dela, a nota sobre as plataformas. Antes o botao
+   ficava em right:140px -- medida calculada para um texto curto -- e
+   qualquer rotulo mais largo passava por cima dele. */
+.header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.line2 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    line-height: 1.35;
+}
+
+#app-version-display {
+    color: #98a29a;
+    font-size: 11px;
     font-weight: 400;
-    line-height: 1.3;
+}
+
+.header-note {
+    color: #7d8b7e;
+    font-size: 11px;
+    font-weight: 400;
+    margin: 0;
 }
 
 .header-note strong {
@@ -58,20 +75,6 @@ body, html {
 
 .header-note .ecosystem-short {
     display: none;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.line2 {
-    color: #98a29a;
-    font-size: 11px;
-    font-weight: 400;
-    text-align: right;
-    white-space: nowrap;
 }
 
 .install-help-button {
@@ -385,13 +388,12 @@ body, html {
         height: auto;
     }
 
-    .line2 {
+    #app-version-display {
         font-size: 10px;
     }
 
     /* Em tela estreita nao ha espaco para a frase inteira. */
     .header-note {
-        padding: 0 8px;
         font-size: 10px;
     }
 
@@ -533,12 +535,6 @@ body, html {
 
 .custom-button:disabled:hover {
     background-color: #aeb8af; /* Keeps color stable on hover */
-}
-
-#app-version-display {
-    position: relative;
-    top: 12px;           
-    left: 20px;         
 }
 
 /* ===== ESTILOS DE LOGIN ===== */

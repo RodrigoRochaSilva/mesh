@@ -1,1 +1,1 @@
-const APP_VERSION = 'v3.0-mesh.1';
+const APP_VERSION = 'v3.1-mesh';

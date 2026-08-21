@@ -36,29 +36,27 @@ body, html {
     height: 100%;
 }
 
-/* Canto direito do cabecalho: botao de ajuda ao lado de um bloco empilhado
-   com a versao e, abaixo dela, a nota sobre as plataformas. Antes o botao
-   ficava em right:140px -- medida calculada para um texto curto -- e
-   qualquer rotulo mais largo passava por cima dele. */
+/* Cabecalho em tres ancoras: logo com a versao logo abaixo a esquerda,
+   botao de ajuda no alto a direita e a nota sobre as plataformas rente a
+   base. A separacao vertical entre o botao e a nota e proposital: colados,
+   a interrogacao parecia se referir a frase.
+   Antes o botao ficava em right:140px -- medida calculada para um texto
+   curto -- e qualquer rotulo mais largo passava por cima dele. */
 .header-right {
     margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.line2 {
+    align-self: stretch;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    text-align: right;
-    line-height: 1.35;
+    justify-content: space-between;
+    padding: 10px 0 6px;
 }
 
 #app-version-display {
     color: #98a29a;
     font-size: 11px;
     font-weight: 400;
+    line-height: 1;
 }
 
 .header-note {
@@ -66,6 +64,8 @@ body, html {
     font-size: 11px;
     font-weight: 400;
     margin: 0;
+    text-align: right;
+    line-height: 1.3;
 }
 
 .header-note strong {
@@ -110,7 +110,10 @@ body, html {
 .logo-container {
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 4px;
     height: 100%;
 }
 
@@ -390,6 +393,16 @@ body, html {
 
     #app-version-display {
         font-size: 10px;
+    }
+
+    /* Cabecalho baixo: reduzir o recuo aumenta a folga entre a ajuda, no
+       alto, e a nota, na base -- que e o que as mantem dissociadas. */
+    .header-right {
+        padding: 2px 0 0;
+    }
+
+    .logo-container {
+        gap: 2px;
     }
 
     /* Em tela estreita nao ha espaco para a frase inteira. */

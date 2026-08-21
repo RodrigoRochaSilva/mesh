@@ -1,7 +1,7 @@
 {
   "name": "mesh",
   "short_name": "mesh",
-  "description": "Scouting task navigation for the AgroXeque platform",
+  "description": "Field task navigation for the FieldRank and AgroXeque ecosystem",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -36,45 +36,52 @@ body, html {
     height: 100%;
 }
 
-/* O lado direito do cabecalho e um bloco flexivel: antes o botao de ajuda
-   ficava em right:140px, medida calculada para um texto curto, e qualquer
-   texto mais largo passava por cima dele. */
-.header-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+/* O cabecalho e uma unica linha flexivel: logo a esquerda, nota ao centro,
+   ajuda e versao a direita. Antes o botao de ajuda ficava em right:140px --
+   medida calculada para um texto curto -- e qualquer rotulo mais largo
+   passava por cima dele. */
+.header-note {
+    flex: 1;
+    margin: 0;
+    padding: 0 16px;
+    text-align: center;
+    color: #7d8b7e;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.3;
 }
 
-.line2 {
+.header-note strong {
     color: #39693C;
-    font-size: 13px;
-    font-weight: bold;
-    text-align: right;
-    max-width: 240px;
-    line-height: 1.25;
+    font-weight: 600;
 }
 
-.line2 .ecosystem-full {
-    display: block;
-}
-
-.line2 .ecosystem-short {
+.header-note .ecosystem-short {
     display: none;
 }
 
-.line2 #app-version-display {
-    display: block;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.line2 {
+    color: #98a29a;
+    font-size: 11px;
+    font-weight: 400;
+    text-align: right;
+    white-space: nowrap;
 }
 
 .install-help-button {
     flex-shrink: 0;
-    width: 34px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: 1px solid #cad5cb;
-    background: #ffffff;
-    color: #39693C;
+    border: none;
+    background: #39693C;
+    color: #ffffff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -84,13 +91,12 @@ body, html {
 }
 
 .install-help-button:hover {
-    background: #eef5ef;
-    border-color: #39693C;
+    background: #2c5430;
 }
 
 .install-help-button svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
@@ -380,22 +386,26 @@ body, html {
     }
 
     .line2 {
-        max-width: 150px;
-        font-size: 11px;
+        font-size: 10px;
     }
 
     /* Em tela estreita nao ha espaco para a frase inteira. */
-    .line2 .ecosystem-full {
+    .header-note {
+        padding: 0 8px;
+        font-size: 10px;
+    }
+
+    .header-note .ecosystem-full {
         display: none;
     }
 
-    .line2 .ecosystem-short {
-        display: block;
+    .header-note .ecosystem-short {
+        display: inline;
     }
 
     .install-help-button {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
     }
 
     .button-container {

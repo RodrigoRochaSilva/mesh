@@ -1,6 +1,14 @@
 'use strict';
 
-const ALLOWED_USER_TYPES = new Set(['team', 'guest', 'full']);
+// Motivos vindos de public.mesh_access que dizem respeito ao plano, e nao ao
+// tipo da conta. Servem para a interface dizer ao usuario o que fazer.
+const PLAN_REASONS = new Set([
+  'no_plan',
+  'plan_unknown',
+  'plan_without_app',
+  'subscription_inactive',
+  'subscription_expired',
+]);
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX_ATTEMPTS = 5;
 const rateLimitStore = new Map();
@@ -184,9 +192,39 @@ function parseBody(body) {
   }
 }
 
-function isEligibleProfile(profile) {
-  if (!profile) return false;
-  return ALLOWED_USER_TYPES.has(profile.user_type);
+// A elegibilidade vive em public.mesh_access, no banco -- fonte unica para o
+// Mesh e para o frontend do FieldRank. Regra: usuarios B2B (full/guest/viewer)
+// entram pelo vinculo, sem checagem de plano, porque nao possuem assinatura;
+// usuarios saas entram se o plano estiver ativo e incluir o aplicativo.
+async function checkMeshAccess({ supabaseUrl, serviceRoleKey, userId }) {
+  try {
+    const resp = await fetch(`${supabaseUrl}/rest/v1/rpc/mesh_access`, {
+      method: 'POST',
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ p_user_id: userId }),
+    });
+
+    if (!resp.ok) return { allowed: false, reason: 'check_failed' };
+
+    const payload = await resp.json();
+    const row = Array.isArray(payload) ? payload[0] : payload;
+    return {
+      allowed: row && row.allowed === true,
+      reason: (row && row.reason) || 'unknown',
+    };
+  } catch (_) {
+    return { allowed: false, reason: 'check_failed' };
+  }
+}
+
+// Codigo de erro que a interface entende, a partir do motivo da recusa.
+function accessErrorCode(reason) {
+  return PLAN_REASONS.has(reason) ? 'plan_not_allowed' : 'user_type_not_allowed';
 }
 
 async function signInWithPassword({ supabaseUrl, anonKey, email, password }) {
@@ -270,7 +308,8 @@ module.exports = {
   isOriginAllowed,
   jsonResponse,
   parseBody,
-  isEligibleProfile,
+  checkMeshAccess,
+  accessErrorCode,
   signInWithPassword,
   refreshSession,
   getProfileByUserId,

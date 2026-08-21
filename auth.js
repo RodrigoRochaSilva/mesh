@@ -26,7 +26,10 @@ function createAuthError(message, status, code) {
 function mapAuthErrorMessage(status, code) {
     if (status === 401) return 'Email ou senha incorretos.';
     if (status === 403) {
-        if (code === 'plan_not_allowed' || code === 'user_type_not_allowed') {
+        if (code === 'plan_not_allowed') {
+            return 'Seu plano não inclui o acesso ao mesh. Faça upgrade na plataforma para utilizá-lo.';
+        }
+        if (code === 'user_type_not_allowed') {
             return 'Seu tipo de conta não tem permissão para acessar este app. Fale com o administrador.';
         }
         if (code === 'origin_not_allowed') {

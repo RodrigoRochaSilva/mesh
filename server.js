@@ -15,7 +15,8 @@ const {
     sanitizeEmail,
     buildCorsHeaders,
     isOriginAllowed,
-    isEligibleProfile,
+    checkMeshAccess,
+    accessErrorCode,
     signInWithPassword,
     refreshSession,
     getProfileByUserId
@@ -124,8 +125,13 @@ async function handleAuthLogin(req, res, corsHeaders) {
             return;
         }
 
-        if (!isEligibleProfile(profileResp.data)) {
-            sendJson(res, 403, { error: 'user_type_not_allowed' }, corsHeaders);
+        const acesso = await checkMeshAccess({
+            supabaseUrl,
+            serviceRoleKey,
+            userId: profileResp.data.id,
+        });
+        if (!acesso.allowed) {
+            sendJson(res, 403, { error: accessErrorCode(acesso.reason) }, corsHeaders);
             return;
         }
 
@@ -187,8 +193,13 @@ async function handleAuthValidate(req, res, corsHeaders) {
             return;
         }
 
-        if (!isEligibleProfile(profileResp.data)) {
-            sendJson(res, 403, { error: 'user_type_not_allowed' }, corsHeaders);
+        const acesso = await checkMeshAccess({
+            supabaseUrl,
+            serviceRoleKey,
+            userId: profileResp.data.id,
+        });
+        if (!acesso.allowed) {
+            sendJson(res, 403, { error: accessErrorCode(acesso.reason) }, corsHeaders);
             return;
         }
 

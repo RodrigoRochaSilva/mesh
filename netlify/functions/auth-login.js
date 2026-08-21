@@ -11,7 +11,8 @@ const {
   isOriginAllowed,
   jsonResponse,
   parseBody,
-  isEligibleProfile,
+  checkMeshAccess,
+  accessErrorCode,
   signInWithPassword,
   getProfileByUserId,
 } = require('./_authCommon');
@@ -82,8 +83,13 @@ exports.handler = async (event) => {
       return jsonResponse(403, { error: 'access_denied' }, corsHeaders);
     }
 
-    if (!isEligibleProfile(profileResp.data)) {
-      return jsonResponse(403, { error: 'user_type_not_allowed' }, corsHeaders);
+    const acesso = await checkMeshAccess({
+      supabaseUrl,
+      serviceRoleKey,
+      userId: profileResp.data.id,
+    });
+    if (!acesso.allowed) {
+      return jsonResponse(403, { error: accessErrorCode(acesso.reason) }, corsHeaders);
     }
 
     clearLoginFailures(ip, email);

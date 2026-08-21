@@ -36,19 +36,39 @@ body, html {
     height: 100%;
 }
 
+/* O lado direito do cabecalho e um bloco flexivel: antes o botao de ajuda
+   ficava em right:140px, medida calculada para um texto curto, e qualquer
+   texto mais largo passava por cima dele. */
+.header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .line2 {
-    position: absolute;
-    right: 20px;
-    top: 20px;
     color: #39693C;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
+    text-align: right;
+    max-width: 240px;
+    line-height: 1.25;
+}
+
+.line2 .ecosystem-full {
+    display: block;
+}
+
+.line2 .ecosystem-short {
+    display: none;
+}
+
+.line2 #app-version-display {
+    display: block;
 }
 
 .install-help-button {
-    position: absolute;
-    right: 140px;
-    top: 18px;
+    flex-shrink: 0;
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -360,13 +380,20 @@ body, html {
     }
 
     .line2 {
-        top: 10px;
-        right: 10px;
+        max-width: 150px;
+        font-size: 11px;
+    }
+
+    /* Em tela estreita nao ha espaco para a frase inteira. */
+    .line2 .ecosystem-full {
+        display: none;
+    }
+
+    .line2 .ecosystem-short {
+        display: block;
     }
 
     .install-help-button {
-        top: 12px;
-        right: 100px;
         width: 30px;
         height: 30px;
     }
@@ -573,14 +600,6 @@ body, html {
     margin: 0 0 4px;
     font-weight: 600;
     line-height: 1.22;
-}
-
-.login-ecosystem {
-    color: #8a9494;
-    font-size: 0.78rem;
-    margin: 6px 0 0;
-    font-weight: 400;
-    line-height: 1.3;
 }
 
 .login-info {

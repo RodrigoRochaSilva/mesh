@@ -40,17 +40,19 @@
             <div class="logo-container">
                 <img src="imagens/logo_principal.png" alt="Logotipo do mesh" class="logo">
             </div>
-            <button id="install-help-button" class="install-help-button" type="button" aria-label="Ajuda para instalação" title="Ajuda para instalação">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-2.9 2.2-2.9 4"></path>
-                    <circle cx="12" cy="17.1" r="1"></circle>
-                </svg>
-            </button>
-            <div class="line2">
-                FieldRank &middot; AgroXeque
-                <br>
-                <span id="app-version-display" style="font-weight: normal; font-size: 12px;"></span>
+            <div class="header-right">
+                <button id="install-help-button" class="install-help-button" type="button" aria-label="Ajuda para instalação" title="Ajuda para instalação">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-2.9 2.2-2.9 4"></path>
+                        <circle cx="12" cy="17.1" r="1"></circle>
+                    </svg>
+                </button>
+                <div class="line2">
+                    <span class="ecosystem-full">Este app faz parte do ecossistema FieldRank &middot; AgroXeque</span>
+                    <span class="ecosystem-short">FieldRank &middot; AgroXeque</span>
+                    <span id="app-version-display" style="font-weight: normal; font-size: 12px;"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -71,7 +73,6 @@
                 <img src="imagens/logo_principal.png" alt="Logotipo do mesh" class="login-logo">
                 <h2>Entrar</h2>
                 <p class="login-info">Use as mesmas credenciais que você usa na plataforma principal</p>
-                <p class="login-ecosystem">Este aplicativo faz parte do ecossistema FieldRank e AgroXeque</p>
             </div>
             <form id="login-form" method="post" action="#">
                 <div class="form-group">
